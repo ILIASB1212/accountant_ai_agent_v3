@@ -1,0 +1,166 @@
+# Bytecode & Compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.dll
+
+# Distribution & packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Package manager & lock files (Pipenv, Poetry, PDM, uv)
+Pipfile.lock
+# poetry.lock   # uncomment if you don't want to commit it
+.pdm.toml
+uv.lock
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+env
+.python-version
+
+# Testing & coverage
+.pytest_cache/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# Type checking & linting
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+
+# Profiling & debugging
+.prof
+.profile
+*.stat
+
+# IDEs & editors
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+.idea_modules/
+.vscode/
+*.code-workspace
+.spyderproject
+.spyproject
+.ropeproject
+
+# Jupyter & IPython
+.ipynb_checkpoints/
+profile_default/
+ipython_config.py
+
+# Build tools & docs
+*.manifest
+*.spec
+docs/_build/
+target/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Environment & sensitive files
+.env
+.env.*
+!.env.example
+*.log
+logs/
+log/
+*.pid
+*.seed
+*.pid.lock
+
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.stackdump
+.directory
+*.nfs*
+
+# Django & Flask
+local_settings.py
+db.sqlite3
+instance/
+.webassets-cache
+
+# Translations
+*.mo
+*.pot
+
+# SageMath
+*.sage.py
+
+# Scrapy
+.scrapy
+
+# Mr. Developer
+.mr.developer.cfg
+.project
+.pydevproject
+
+# Pyre
+.pyre/
+.claude
+# PEP 582 (__pypackages__)
+__pypackages__/
+
+# PyCharm cache
+.idea/caches/build_file_checksums.ser
+
+# IntelliJ HTTP requests
+.idea/httpRequests
+
+# Temporary & backup files
+*.swp
+*.swo
+*~
+*.tmp
+*.bak
+*.orig
+*.rej
+*.sqlite3
+*.db

@@ -1,0 +1,11 @@
+langchain
+langgraph
+pandas
+langchain_openrouter
+pyaml
+langchain_community
+ipynb
+langchain_huggingface
+langchain_chroma
+ipykernel
+pypdf
