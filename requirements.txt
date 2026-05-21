@@ -9,3 +9,6 @@ langchain_huggingface
 langchain_chroma
 ipykernel
 pypdf
+langchain_community
+langchain_experimental
+sentence-transformers

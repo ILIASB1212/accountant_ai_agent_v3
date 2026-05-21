@@ -45,4 +45,7 @@ class VectorStore:
         """Get retriever from vectorstore"""
         if self.vectorstore is None:
             raise CustomException("Vectorstore not created yet. Call create_from_documents first.")
-        return self.vectorstore.as_retriever(search_kwargs={"k": k})
+        return self.vectorstore.as_retriever(search_type="mmr",
+                                             search_kwargs={"k": k,
+                                                            "fetch_k": 20,
+                                                            "lambda_mult": 0.5 })

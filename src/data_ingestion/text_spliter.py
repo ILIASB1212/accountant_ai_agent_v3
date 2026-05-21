@@ -1,9 +1,8 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_text_splitters import SemanticChunker
-
-from langchain_community.document_loaders import PyPDFDirectoryLoader
+from langchain_experimental.text_splitter import SemanticChunker   # ← FIXED
 from src.loging.logger import log
 from src.exceptions.custom_exceptions import CustomException
+import sys
 
 logging=log
 
@@ -26,13 +25,12 @@ class TextSpliter:
                         )
 
            
-            chunks = text_splitter.create_document(documents)
+            chunks = text_splitter.split_documents(documents)
             logging.info(f"✅ Split {len(documents)} documents into {len(chunks)} chunks")
             return chunks
         except Exception as e:
             logging.error(f"❌ Error splitting documents: {e}")
-            raise CustomException("Failed to split documents", e)
-
+            raise CustomException(f"Failed to chunk  {e}",sys)
 
 
 

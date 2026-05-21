@@ -1,6 +1,3 @@
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import PyPDFDirectoryLoader
-from langchain_community.vectorstores import FAISS
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from src.loging.logger import log
 from src.exceptions.custom_exceptions import CustomException
@@ -35,7 +32,7 @@ class Embeddings:
                             'batch_size': self.batch_size
                         }
                     )
-                log.info(f"initialiased embeding model with model name : {self.model_name}")
+                log.info(f"initialiased embeding model {HuggingFaceEmbeddings.__class__.__name__} with model name : {self.model_name}")
             except Exception as e:
                     logging.error(f"error during initilizing embedings : {e}")
                     raise CustomException(
