@@ -37,10 +37,9 @@ class RagPipeLine:
         
         if self.vectorstore_exists and not self.force_rebuild:
             print("🔄 Loading existing vectorstore...")
-            self.vectorstore.load_existing() 
             print(f"✅ Loaded existing vectorstore from {self.persist_dir}")
-            self.retriever=self.vectorstore.get_retriever()
-            return self.retriver
+            self.retriever=self.vectorstore.load_existing() 
+            return self.retriever
 
         else:
             try:
@@ -66,7 +65,8 @@ class RagPipeLine:
                 print(f"✅ retriver for {self.persist_dir} is ready to use ")
                 return self.retriever
             except Exception as e:
-                log.error(e,sys)
+                log.error(f"error in rag pipeline {e}")
+                raise CustomException(f"error in rag pipeline {e}",sys)
 
 
                 

@@ -27,7 +27,7 @@ class VectorStore:
             logging.error(f"❌ Error creating vectorstore: {e}")
             raise CustomException("Failed to create vectorstore", e)
 
-    def load_existing(self):
+    def load_existing(self,k: int = 4):
         """Load existing vectorstore"""
         try:
             self.vectorstore = Chroma(
@@ -36,7 +36,10 @@ class VectorStore:
             )
             logging.info(f"✅ Loaded existing vectorstore from {self.persist_directory}")
             print(f"✅ Loaded existing vectorstore from {self.persist_directory}")
-            return self.vectorstore
+            return self.vectorstore.as_retriever(search_type="mmr",
+                                             search_kwargs={"k": k,
+                                                            "fetch_k": 20,
+                                                            "lambda_mult": 0.5 })
         except Exception as e:
             logging.error(f"❌ Error loading vectorstore: {e}")
             raise CustomException("Failed to load vectorstore", e)
