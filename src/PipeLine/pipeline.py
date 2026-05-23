@@ -30,8 +30,8 @@ class RagPipeLine:
         print(f"🔍 Vectorstore exists: {self.vectorstore_exists}")
         print(f"{'='*50}\n")
     def run(self):
-        embeding_model=Embeddings()
-        embeding=embeding_model.initializing_embedding()
+        self.embeding_model=Embeddings()
+        embeding=self.embeding_model.initializing_embedding()
         self.vectorstore =VectorStore(embeddings=embeding,
                                 persist_directory=self.persist_dir)
         

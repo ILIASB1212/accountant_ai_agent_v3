@@ -12,7 +12,7 @@ load_dotenv()
 # Get paths from environment variables with fallbacks
 DATA_DIR = "../data/CGNC"
 PERSIST_DIR = "artifacts/vectorestore/db_CGNC"
-FORCE_REBUILD = False 
+FORCE_REBUILD = True 
 
 rag=RagPipeLine(data_dir=DATA_DIR,
             persist_dir=PERSIST_DIR,force_rebuild=FORCE_REBUILD)

@@ -24,6 +24,7 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
+lab_to_test_and manifest
 
 # Package manager & lock files (Pipenv, Poetry, PDM, uv)
 Pipfile.lock

@@ -12,3 +12,7 @@ pypdf
 langchain_community
 langchain_experimental
 sentence-transformers
+google-search-results
+streamlit
+langfuse
+langgraph-supervisor

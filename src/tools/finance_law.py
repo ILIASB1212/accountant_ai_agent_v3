@@ -6,7 +6,7 @@ from src.PipeLine.pipeline import RagPipeLine
 
 DATA_DIR = "../data/LOIS_DE_FINANCE"
 PERSIST_DIR = "artifacts/vectorestore/LOIS_DE_FINANCE"
-FORCE_REBUILD = False 
+FORCE_REBUILD = True 
 
 rag=RagPipeLine(data_dir=DATA_DIR,
             persist_dir=PERSIST_DIR,force_rebuild=FORCE_REBUILD)

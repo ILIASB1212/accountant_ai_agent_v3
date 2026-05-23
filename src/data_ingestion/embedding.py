@@ -4,12 +4,22 @@ from src.exceptions.custom_exceptions import CustomException
 
 logging=log
 
+# Try a multilingual model
+model_name="intfloat/multilingual-e5-large"
+
+from  dotenv import  load_dotenv
+
+load_dotenv()
+import os
+
+os.environ["HUGGINGFACE_API"] = os.getenv("HUGGINGFACE_API")  
+
 
 class Embeddings:
 
     def __init__(self,
-        model_name:str="sentence-transformers/all-MiniLM-L6-v2",
-        device: str = "cpu",
+        model_name:str="intfloat/multilingual-e5-large",
+        device: str = "cuda",
         normalize_embeddings: bool = True,
         batch_size: int = 32):
 
