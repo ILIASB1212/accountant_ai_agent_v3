@@ -30,16 +30,18 @@ class RagPipeLine:
         print(f"🔍 Vectorstore exists: {self.vectorstore_exists}")
         print(f"{'='*50}\n")
     def run(self):
-        self.embeding_model=Embeddings()
-        embeding=self.embeding_model.initializing_embedding()
-        self.vectorstore =VectorStore(embeddings=embeding,
-                                persist_directory=self.persist_dir)
+        self.embeding_model = Embeddings()
+        embeding = self.embeding_model.initializing_embedding()
+        self.vectorstore = VectorStore(embeddings=embeding, persist_directory=self.persist_dir)
         
         if self.vectorstore_exists and not self.force_rebuild:
             print("🔄 Loading existing vectorstore...")
+            self.retriever = self.vectorstore.load_existing()  # ← now returns retriever directly
             print(f"✅ Loaded existing vectorstore from {self.persist_dir}")
-            self.retriever=self.vectorstore.load_existing() 
-            return self.retriever
+            return self.retriever  # ← FIX: was self.retriever.hybrid_retriever()
+
+
+            
 
         else:
             try:
@@ -64,6 +66,7 @@ class RagPipeLine:
                 self.retriever=self.vectorstore.get_retriever()
                 print(f"✅ retriver for {self.persist_dir} is ready to use ")
                 return self.retriever
+
             except Exception as e:
                 log.error(f"error in rag pipeline {e}")
                 raise CustomException(f"error in rag pipeline {e}",sys)

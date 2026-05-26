@@ -11,22 +11,16 @@ from  dotenv import  load_dotenv
 
 load_dotenv()
 import os
+from langchain_openai import OpenAIEmbeddings
 
-os.environ["HUGGINGFACE_API"] = os.getenv("HUGGINGFACE_API")  
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")  
 
 
 class Embeddings:
 
-    def __init__(self,
-        model_name:str="intfloat/multilingual-e5-large",
-        device: str = "cuda",
-        normalize_embeddings: bool = True,
-        batch_size: int = 32):
+    def __init__(self,model_name:str="text-embedding-3-large"):
 
         self.model_name = model_name
-        self.device = device
-        self.normalize_embeddings = normalize_embeddings
-        self.batch_size = batch_size
         self._embeddings = None
         logging.info("embedding get initialized")
 
@@ -34,15 +28,8 @@ class Embeddings:
     def initializing_embedding(self):
         if self._embeddings is None:
             try:
-                self.embeddings = HuggingFaceEmbeddings(
-                        model_name=self.model_name,
-                        model_kwargs={'device': self.device},
-                        encode_kwargs={
-                            'normalize_embeddings': self.normalize_embeddings,
-                            'batch_size': self.batch_size
-                        }
-                    )
-                log.info(f"initialiased embeding model {HuggingFaceEmbeddings.__class__.__name__} with model name : {self.model_name}")
+                self.embeddings = OpenAIEmbeddings(model=self.model_name)
+                log.info(f"initialiased embeding model {self.embeddings.__class__.__name__} with model name : {self.model_name}")
             except Exception as e:
                     logging.error(f"error during initilizing embedings : {e}")
                     raise CustomException(
@@ -50,3 +37,4 @@ class Embeddings:
                         error_detail=e
                     )
         return self.embeddings
+    

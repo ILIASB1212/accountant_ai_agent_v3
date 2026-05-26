@@ -16,3 +16,6 @@ google-search-results
 streamlit
 langfuse
 langgraph-supervisor
+langchain_openai
+langchain_classic
+rank_bm25
