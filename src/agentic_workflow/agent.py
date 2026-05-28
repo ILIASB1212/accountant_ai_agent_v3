@@ -1,20 +1,19 @@
-from src.tools.plan_comptable import plan_comptable_tool
-from src.tools.cgnc import cgnc_tool
-from src.tools.finance_law import finance_law_tool
-from src.tools.tax import CGI_tool
-from src.tools.web_search_tool import search
-from  dotenv import  load_dotenv
-from langchain_openrouter import ChatOpenRouter
-import os
-
-from langgraph.prebuilt import tools_condition
 from langchain_core.messages import AIMessage, HumanMessage,SystemMessage
-
+from src.tools.plan_comptable import plan_comptable_tool
+from langgraph.checkpoint.memory import MemorySaver
+from src.tools.finance_law import finance_law_tool
 from langgraph.graph import StateGraph, START, END 
+from langchain_openrouter import ChatOpenRouter
+from langgraph.prebuilt import tools_condition
+from src.tools.web_search_tool import search
 from langgraph.prebuilt import ToolNode
-from typing import TypedDict,List
 from typing_extensions import Annotated
 from langgraph.graph import add_messages
+from src.tools.cgnc import cgnc_tool
+from src.tools.tax import CGI_tool
+from typing import TypedDict,List
+from  dotenv import  load_dotenv
+import os
 
 load_dotenv()
 
@@ -101,7 +100,6 @@ builder.add_conditional_edges(
         "__end__": END
     }
 )
-from langgraph.checkpoint.memory import MemorySaver
 checkpointer = MemorySaver()
 graph = builder.compile(checkpointer=checkpointer)
 

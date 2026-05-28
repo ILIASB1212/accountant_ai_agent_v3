@@ -30,7 +30,6 @@ if text:
         st.markdown(text)
 
     # 6. Cache the expensive graph invocation
-    @st.cache_data(show_spinner=False)
     def get_response(user_text: str):
         agent = load_agent()
         config = {"configurable": {"thread_id": "session_1"}}
