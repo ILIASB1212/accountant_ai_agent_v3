@@ -18,11 +18,11 @@ class VectorStore:
         self.persist_directory = persist_directory
         self.vectorstore = None
         self.hybrid_retriever = None
-
+        # create a file for BM25 if it doesn't exist
         Path(persist_directory).mkdir(parents=True, exist_ok=True)
         logging.info(f"✅ VectorStore initialized with persist_dir: {persist_directory}")
 
-    # ── Helper: BM25 file path ──
+    # ── Helper: BM25 file path ── create sub file for BM25 
     @property
     def _bm25_path(self) -> Path:
         return Path(self.persist_directory) / "bm25_index.pkl"
@@ -71,6 +71,7 @@ class VectorStore:
                 persist_directory=self.persist_directory
             )
             logging.info(f"✅ Loaded Chroma from {self.persist_directory}")
+            dense_retriever = self.vectorstore.as_retriever(search_kwargs={"k": 10})
 
             # 2. Load BM25 from disk
             if self._bm25_path.exists():
@@ -80,7 +81,6 @@ class VectorStore:
                 logging.info(f"✅ Loaded BM25 index from {self._bm25_path}")
 
                 # 3. Rebuild hybrid
-                dense_retriever = self.vectorstore.as_retriever(search_kwargs={"k": 10})
                 self.hybrid_retriever = EnsembleRetriever(
                     retrievers=[dense_retriever, sparse_retriever],
                     weights=[0.7, 0.3]

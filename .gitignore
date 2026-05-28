@@ -25,7 +25,7 @@ wheels/
 *.egg
 MANIFEST
 lab_to_test_and manifest
-
+backup
 # Package manager & lock files (Pipenv, Poetry, PDM, uv)
 Pipfile.lock
 # poetry.lock   # uncomment if you don't want to commit it

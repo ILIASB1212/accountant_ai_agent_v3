@@ -19,3 +19,7 @@ langgraph-supervisor
 langchain_openai
 langchain_classic
 rank_bm25
+fastapi
+langgraph-checkpoint-postgres
+psycopg_pool
+psycopg[binary]
