@@ -33,7 +33,8 @@ if text:
     @st.cache_data(show_spinner=False)
     def get_response(user_text: str):
         agent = load_agent()
-        result = agent.invoke({"messages": [HumanMessage(content=user_text)]})
+        config = {"configurable": {"thread_id": "session_1"}}
+        result = agent.invoke({"messages": [HumanMessage(content=user_text)]}, config=config)
         # Return a plain serializable string so Streamlit can cache it
         return result["messages"][-1].content
 

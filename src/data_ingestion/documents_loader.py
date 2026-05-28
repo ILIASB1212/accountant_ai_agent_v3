@@ -1,7 +1,7 @@
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from src.loging.logger import log
 from src.exceptions.custom_exceptions import CustomException
-
+import sys
 logging=log
 
 
@@ -29,9 +29,8 @@ class DocumentLoader:
                 
             except Exception as e:
                     logging.error(f"error in loading documents : {e}")
-                    raise CustomException(
-                        message=f"Failed to load documents {e}",
-                        error_detail=e
+                    raise CustomException(f"Failed to load documents {e}",sys
+                        
                     )
         elif not self.docs:
             logging.error(f" No documents found in {self.directory}")

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from src.agentic_workflow.agent import graph
 from datetime import datetime
+from fastapi.responses import PlainTextResponse
 
 
 app=FastAPI()
@@ -19,7 +20,8 @@ def ask_agent(request:ChatModel):
 
     response = graph.invoke({"messages": request.messages}, config=config)
     end = f"_Response generated in {(datetime.now()-start).total_seconds():.2f} seconds_"
-    return f"{end} \n {response['messages'][-1].content}"
+    text= f"{end} \n {response['messages'][-1].content}"
+    return PlainTextResponse(content=text)
 
 
 

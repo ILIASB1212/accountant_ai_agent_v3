@@ -1,7 +1,7 @@
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from src.loging.logger import log
 from src.exceptions.custom_exceptions import CustomException
-
+import sys
 logging=log
 
 # Try a multilingual model
@@ -32,9 +32,7 @@ class Embeddings:
                 log.info(f"initialiased embeding model {self.embeddings.__class__.__name__} with model name : {self.model_name}")
             except Exception as e:
                     logging.error(f"error during initilizing embedings : {e}")
-                    raise CustomException(
-                        message=f"Failed to initialize embeddings with model {self.model_name} or their is an error in embeding models",
-                        error_detail=e
+                    raise CustomException(f"Failed to initialize embeddings with model {self.model_name} or their is an error in embeding models",sys
                     )
         return self.embeddings
     

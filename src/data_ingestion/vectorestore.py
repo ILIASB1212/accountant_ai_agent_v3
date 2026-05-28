@@ -3,6 +3,7 @@ from pathlib import Path
 from langchain_chroma import Chroma
 from langchain_community.retrievers import BM25Retriever
 from langchain_classic.retrievers.ensemble import EnsembleRetriever
+import sys
 
 
   # type: ignore
@@ -60,7 +61,7 @@ class VectorStore:
 
         except Exception as e:
             logging.error(f"❌ Error creating vectorstore: {e}")
-            raise CustomException("Failed to create vectorstore", e)
+            raise CustomException(f"Failed to create vectorstore{e}", sys)
 
     # ── LOAD EXISTING (restore both dense + BM25) ──
     def load_existing(self, k: int = 4):
@@ -95,12 +96,12 @@ class VectorStore:
 
         except Exception as e:
             logging.error(f"❌ Error loading vectorstore: {e}")
-            raise CustomException("Failed to load vectorstore", e)
+            raise CustomException(f"Failed to load vectorstore{e}", sys)
 
     # ── GET RETRIEVER ──
     def get_retriever(self, k: int = 4):
         if self.vectorstore is None:
-            raise CustomException("Vectorstore not created yet.")
+            raise CustomException("Vectorstore not created yet.", sys)
 
         if self.hybrid_retriever is not None:
             return self.hybrid_retriever
