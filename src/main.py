@@ -3,6 +3,9 @@ from langchain_core.messages import HumanMessage
 from datetime import datetime
 st.title("Agentic Workflow: Moroccan Accounting & Tax Assistant")
 
+with st.sidebar:
+    session_name = st.text_input("Session name", key="session_name")
+
 # 1. Cache the heavy graph import/initialization
 @st.cache_resource
 def load_agent():
@@ -32,7 +35,7 @@ if text:
     # 6. Cache the expensive graph invocation
     def get_response(user_text: str):
         agent = load_agent()
-        config = {"configurable": {"thread_id": "session_1"}}
+        config = {"configurable": {"thread_id": st.session_state.session_name or "default_thread"}}
         result = agent.invoke({"messages": [HumanMessage(content=user_text)]}, config=config)
         # Return a plain serializable string so Streamlit can cache it
         return result["messages"][-1].content

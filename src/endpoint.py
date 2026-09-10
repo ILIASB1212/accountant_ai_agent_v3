@@ -9,7 +9,7 @@ app=FastAPI()
 
 class ChatModel(BaseModel):
     thread_id: str
-    messages: str
+    messages: list
 
 
 
