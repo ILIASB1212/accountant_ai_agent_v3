@@ -21,7 +21,7 @@ load_dotenv()
 os.environ["OPENROUTER_API_KEY"] = os.getenv("OPENROUTER_API_KEY")  
 tools=[cgnc_tool,finance_law_tool,CGI_tool,plan_comptable_tool,search]
 
-MODEL = "nvidia/nemotron-3-nano-30b-a3b:free"
+MODEL = "nvidia/nemotron-3.5-lightning:free"
 llm = ChatOpenRouter(model=MODEL)
 
 
