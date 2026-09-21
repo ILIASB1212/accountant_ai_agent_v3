@@ -1,26 +1,30 @@
+# langchain ecosysteme
 langchain
 langgraph
 pandas
 langchain_openrouter
-pyaml
 langchain_community
-ipynb
 langchain_huggingface
 langchain_chroma
-ipykernel
-pypdf
 langchain_community
 langchain_experimental
+langgraph-supervisor
+langchain_openai
+langchain_classic
+langgraph-checkpoint-postgres
+# utilitis
+pyaml
+ipynb
+ipykernel
+# RAGS and VectorStore
+pypdf
+rank_bm25
+# transformer
 sentence-transformers
 google-search-results
 streamlit
 langfuse
-langgraph-supervisor
-langchain_openai
-langchain_classic
-rank_bm25
 fastapi
-langgraph-checkpoint-postgres
 psycopg_pool
 psycopg[binary]
 # guardrails
@@ -31,7 +35,7 @@ presidio-anonymizer
 # ocr model 
 torch==2.10.0
 torchvision==0.25.0
-transformers==4.57.1
+transformers>=5.3.0
 Pillow==12.1.1
 matplotlib==3.10.8
 einops==0.8.2
@@ -39,3 +43,4 @@ addict==2.4.0
 easydict==1.13
 pymupdf==1.27.2.2
 psutil==7.2.2
+accelerate

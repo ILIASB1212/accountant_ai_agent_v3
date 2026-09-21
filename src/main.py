@@ -1,6 +1,7 @@
 import streamlit as st
 from langchain_core.messages import HumanMessage
 from datetime import datetime
+from src.tools.ocr import ocr_image
 st.title("Agentic Workflow: Moroccan Accounting & Tax Assistant")
 
 with st.sidebar:
@@ -23,6 +24,24 @@ for msg in st.session_state.messages:
 
 # 4. Get input
 text = st.chat_input("Ask questions")
+
+with st.sidebar:
+    uploaded_image = st.file_uploader("Upload an image for OCR", type=["png", "jpg", "jpeg"])
+    if uploaded_image is not None:
+        # Save the uploaded image to a temporary file
+        with open("temp_image.png", "wb") as f:
+            f.write(uploaded_image.getbuffer())
+        # Perform OCR on the uploaded image
+        ocr_result = ocr_image("temp_image.png")
+        if ocr_result:
+            st.write("**img loaded successfully!**")
+            st.markdown(f"**OCR Result:** {ocr_result}")
+
+
+
+
+
+
 
 # 5. Only run when there is actual input
 if text:
