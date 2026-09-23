@@ -16,14 +16,24 @@ from  dotenv import  load_dotenv
 import os
 
 load_dotenv()
+from langchain.chat_models import init_chat_model
 
 
-os.environ["OPENROUTER_API_KEY"] = os.getenv("OPENROUTER_API_KEY")  
+
+os.environ["LANGSMITH_API_KEY"] = os.getenv("LANGSMITH_API_KEY")
+
+
+
+
+
+
+#os.environ["OPENROUTER_API_KEY"] = os.getenv("OPENROUTER_API_KEY") 
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")  
+
 tools=[cgnc_tool,finance_law_tool,CGI_tool,plan_comptable_tool,search]
 
-MODEL = "nvidia/nemotron-3.5-lightning:free"
-llm = ChatOpenRouter(model=MODEL)
-
+MODEL = "openai:gpt-4o-mini"
+llm = init_chat_model(model=MODEL, temperature=0)
 
 llm_with_tools=llm.bind_tools(tools)
 
@@ -76,7 +86,7 @@ tool_node=ToolNode(tools)
 builder = StateGraph(AgentState)
 builder.add_node("chat", chat_node)
 builder.add_node("tool_node", tool_node)
-builder.add_node("structures", agent_structuring_response)
+#builder.add_node("structures", agent_structuring_response)
 
 
 builder.add_edge(START, "chat")
@@ -88,15 +98,8 @@ builder.add_conditional_edges(
         "__end__": END
     }
 )
-builder.add_edge("tool_node", "structures")
-builder.add_conditional_edges(
-    "structures",
-    tools_condition,
-    {
-        "tools": "tool_node",
-        "__end__": END
-    }
-)
+builder.add_edge("tool_node", "chat")
+
 checkpointer = MemorySaver()
 graph = builder.compile(checkpointer=checkpointer)
 
