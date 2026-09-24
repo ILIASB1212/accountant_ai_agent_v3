@@ -7,7 +7,7 @@ from datetime import datetime
 import streamlit as st
 from langchain_core.messages import HumanMessage
 
-from src.tools.ocr import ocr_document
+from src.tools.glm_ocr import ocr_document
 
 
 st.title("Agentic Workflow: Moroccan Accounting & Tax Assistant")

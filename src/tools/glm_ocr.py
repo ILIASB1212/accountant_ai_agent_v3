@@ -13,6 +13,39 @@ from transformers import (
 
 
 # ============================================================
+# RECSIZE LAYER 
+# ============================================================
+
+
+from PIL import Image
+import tempfile
+from pathlib import Path
+
+
+def resize_image_for_ocr(image_path: str):
+    image = Image.open(image_path)
+
+    new_width = image.width // 2
+    new_height = image.height // 2
+
+    resized_path = tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".jpg"
+    ).name
+
+    image.resize(
+        (new_width, new_height),
+        Image.Resampling.LANCZOS
+    ).convert("RGB").save(
+        resized_path,
+        "JPEG",
+        quality=85
+    )
+
+    return resized_path
+
+
+# ============================================================
 # MODEL
 # ============================================================
 
@@ -80,7 +113,7 @@ def ocr_image(image_path: str):
         with torch.inference_mode():
             output = model.generate(
                 **inputs,
-                max_new_tokens=512
+                max_new_tokens=128
             )
 
         # Decode only newly generated tokens.
@@ -137,9 +170,9 @@ def ocr_pdf(pdf_path: str):
                 # 200 DPI gives a good balance between OCR
                 # quality and memory usage.
                 matrix = fitz.Matrix(
-                    200 / 72,
-                    200 / 72
-                )
+                            150 / 72,
+                            150 / 72
+                        )
 
                 pixmap = page.get_pixmap(
                     matrix=matrix,
@@ -185,7 +218,13 @@ def ocr_document(file_path: str):
     suffix = Path(file_path).suffix.lower()
 
     if suffix in (".png", ".jpg", ".jpeg"):
-        return ocr_image(file_path)
+
+        resized_path = resize_image_for_ocr(file_path)
+
+        try:
+            return ocr_image(resized_path)
+        finally:
+            Path(resized_path).unlink(missing_ok=True)
 
     if suffix == ".pdf":
         return ocr_pdf(file_path)
