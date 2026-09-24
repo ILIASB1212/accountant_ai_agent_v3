@@ -1,4 +1,10 @@
+import os
+import tempfile
+from pathlib import Path
+
 import streamlit as st
+import fitz
+import torch
 
 from transformers import (
     AutoProcessor,
@@ -34,6 +40,11 @@ def load_ocr_model():
 
 def ocr_image(image_path: str):
 
+    if not os.path.isfile(image_path):
+        raise FileNotFoundError(
+            f"Image file not found: {image_path}"
+        )
+
     try:
 
         processor, model = load_ocr_model()
@@ -62,73 +73,107 @@ def ocr_image(image_path: str):
             return_tensors="pt",
         ).to(model.device)
 
-        output = model.generate(
-            **inputs,
-            max_new_tokens=256
-        )
+        # Some Transformers/model versions can include this field,
+        # but GLM-OCR does not need it for generation.
+        inputs.pop("token_type_ids", None)
+
+        with torch.inference_mode():
+            output = model.generate(
+                **inputs,
+                max_new_tokens=512
+            )
+
+        # Decode only newly generated tokens.
+        input_length = inputs["input_ids"].shape[1]
 
         text = processor.decode(
-            output[0],
+            output[0][input_length:],
             skip_special_tokens=True
         )
 
-        # Remove unwanted image tokens
-        text = text.replace(
-            "<|image|>",
-            ""
-        )
+        # Remove unwanted image tokens/instruction text.
+        text = text.replace("<|image|>", "")
+        text = text.replace("Text Recognition:", "")
 
-        # Remove the OCR instruction if returned
-        text = text.replace(
-            "Text Recognition:",
-            ""
-        )
-
-        # Clean whitespace
+        # Clean whitespace.
         text = " ".join(text.split())
 
         return text.strip()
 
     except Exception as e:
 
-        print(
+        raise RuntimeError(
             f"Error during image OCR processing: {e}"
-        )
-
-        return None
+        ) from e
 
 
 # ============================================================
 # PDF OCR
 # ============================================================
 
-@st.cache_resource
-def load_pdf_parser():
-
-    import glmocr
-
-    parser = glmocr.GlmOcrParser()
-
-    return parser
-
-
 def ocr_pdf(pdf_path: str):
+
+    if not os.path.isfile(pdf_path):
+        raise FileNotFoundError(
+            f"PDF file not found: {pdf_path}"
+        )
+
+    page_results = []
 
     try:
 
-        parser = load_pdf_parser()
+        document = fitz.open(pdf_path)
 
-        result = parser.parse(pdf_path)
+        if document.page_count == 0:
+            document.close()
+            return None
 
-        return result
+        # Render PDF pages to PNG and run the same local
+        # GLM-OCR image pipeline on every page.
+        with tempfile.TemporaryDirectory() as temp_dir:
+
+            for page_number, page in enumerate(document):
+
+                # 200 DPI gives a good balance between OCR
+                # quality and memory usage.
+                matrix = fitz.Matrix(
+                    200 / 72,
+                    200 / 72
+                )
+
+                pixmap = page.get_pixmap(
+                    matrix=matrix,
+                    alpha=False
+                )
+
+                page_path = Path(temp_dir) / (
+                    f"page_{page_number + 1}.png"
+                )
+
+                pixmap.save(str(page_path))
+
+                page_text = ocr_image(
+                    str(page_path)
+                )
+
+                if page_text:
+                    page_results.append(
+                        f"--- Page {page_number + 1} ---\n"
+                        f"{page_text}"
+                    )
+
+        document.close()
+
+        if not page_results:
+            return None
+
+        return "\n\n".join(page_results)
 
     except Exception as e:
 
-        print(
+        raise RuntimeError(
             f"Error during PDF OCR processing: {e}"
-        )
-
-        return None
+        ) from e
 
 
 # ============================================================
@@ -137,22 +182,14 @@ def ocr_pdf(pdf_path: str):
 
 def ocr_document(file_path: str):
 
-    file_path = file_path.lower()
+    suffix = Path(file_path).suffix.lower()
 
-    if file_path.endswith(
-        (".png", ".jpg", ".jpeg")
-    ):
-
+    if suffix in (".png", ".jpg", ".jpeg"):
         return ocr_image(file_path)
 
-    elif file_path.endswith(".pdf"):
-
+    if suffix == ".pdf":
         return ocr_pdf(file_path)
 
-    else:
-
-        print(
-            "Unsupported file type."
-        )
-
-        return None
+    raise ValueError(
+        f"Unsupported file type: {suffix or 'unknown'}"
+    )
