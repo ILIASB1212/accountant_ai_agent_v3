@@ -46,3 +46,5 @@ psutil==7.2.2
 accelerate
 glmocr
 pytest
+ragas
+python-dotenv
