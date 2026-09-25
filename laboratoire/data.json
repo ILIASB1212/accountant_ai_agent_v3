@@ -1,0 +1,262 @@
+[
+  {
+    "case_id": 1,
+    "user_input": "Facture Maroc Telecom: 300 MAD TTC. Internet Fibre. Date: 12/04/2026. Query: Enregistre cette charge.",
+    "expected_output": "Débit: 61451 (Frais de téléphone) 250 MAD\nDébit: 34552 (État - TVA récupérable sur charges 20%) 50 MAD\nCrédit: 5141 (Banque) 300 MAD"
+  },
+  {
+    "case_id": 2,
+    "user_input": "Achat d'un PC portable HP Victus pour 8500 MAD chez ElectroPlanet. Query: comptabilise l'achat.",
+    "expected_output": "Débit: 2355 (Matériel informatique) 7083.33 MAD\nDébit: 34551 (État - TVA récupérable sur immobilisations 20%) 1416.67 MAD\nCrédit: 4481 (Dettes sur acquisitions d'immobilisations) 8500 MAD"
+  },
+  {
+    "case_id": 3,
+    "user_input": "Paiement loyer bureau: 4000 MAD par chèque. Query: journaliser.",
+    "expected_output": "Débit: 61311 (Locations de bâtiments) 4000 MAD\nCrédit: 5141 (Banque) 4000 MAD"
+  },
+  {
+    "case_id": 4,
+    "user_input": "Facture Facebook Ads: 100 USD pour publicité. Query: comptabilisation.",
+    "expected_output": "Débit: 61441 (Annonces et insertions) 1000 MAD\nCrédit: 5141 (Banque) 1000 MAD (Facture étrangère non soumise à la TVA marocaine)"
+  },
+  {
+    "case_id": 5,
+    "user_input": "Achat fournitures de bureau: 450 MAD TTC en espèces. Query: Enregistre.",
+    "expected_output": "Débit: 61227 (Fournitures de bureau non stockables) 375 MAD\nDébit: 34552 (État - TVA récupérable sur charges 20%) 75 MAD\nCrédit: 5311 (Caisse) 450 MAD"
+  },
+  {
+    "case_id": 6,
+    "user_input": "Facture Honoraires Comptable: 2000 MAD HT. Query: journal entry.",
+    "expected_output": "Débit: 61365 (Honoraires) 2000 MAD\nDébit: 34552 (État - TVA récupérable sur charges 20%) 400 MAD\nCrédit: 4411 (Fournisseurs) 2400 MAD"
+  },
+  {
+    "case_id": 7,
+    "user_input": "Réception facture électricité Redal: 600 MAD TTC. Query: comptabiliser.",
+    "expected_output": "Débit: 61251 (Achats d'eau, d'électricité) 526.32 MAD\nDébit: 34552 (État - TVA récupérable sur charges 14%) 73.68 MAD\nCrédit: 4411 (Fournisseurs) 600 MAD"
+  },
+  {
+    "case_id": 8,
+    "user_input": "Frais de déplacement taxi: 50 MAD. Query: comment enregistrer ?",
+    "expected_output": "Débit: 61435 (Transports du personnel) 50 MAD\nCrédit: 5311 (Caisse) 50 MAD"
+  },
+  {
+    "case_id": 9,
+    "user_input": "Vente de services à un client local: 10000 MAD HT. Query: passer l'écriture.",
+    "expected_output": "Débit: 3421 (Clients) 12000 MAD\nCrédit: 71241 (Ventes de services produits au Maroc) 10000 MAD\nCrédit: 4455 (État - TVA facturée 20%) 2000 MAD"
+  },
+  {
+    "case_id": 10,
+    "user_input": "Achat de marchandises: 5000 MAD HT, remise 5%. Query: comptabilise.",
+    "expected_output": "Débit: 6111 (Achats de marchandises) 4750 MAD\nDébit: 34552 (État - TVA récupérable sur charges 20%) 950 MAD\nCrédit: 4411 (Fournisseurs) 5700 MAD"
+  },
+  {
+      "case_id": 11,
+      "user_input": "Facture Maroc Telecom: 300 MAD TTC. Internet Fibre. Date: 12/04/2026. Query: Enregistre cette charge.",
+      "expected_output": "Débit: 61451 (Frais de téléphone) 250 MAD\nDébit: 34552 (État - TVA récupérable sur charges 20%) 50 MAD\nCrédit: 5141 (Banque) 300 MAD"
+    },
+    {
+      "case_id": 12,
+      "user_input": "Facture de papeterie : 600 MAD TTC, TVA 20%. Achat de fournitures de bureau. Paiement par chèque bancaire.",
+      "expected_output": "Débit: 6121 (Achats de fournitures de bureau) 500 MAD\nDébit: 34552 (État - TVA récupérable sur charges 20%) 100 MAD\nCrédit: 5141 (Banque) 600 MAD"
+    },
+    {
+      "case_id": 13,
+      "user_input": "Facture fournisseur : 12 000 MAD HT, TVA 20%. Achat de marchandises destinées à la revente. Règlement à crédit 30 jours.",
+      "expected_output": "Débit: 6111 (Achats de marchandises) 12 000 MAD\nDébit: 34551 (État - TVA récupérable sur immobilisations) 2 400 MAD\nCrédit: 4411 (Fournisseurs) 14 400 MAD"
+    },
+    {
+      "case_id": 14,
+      "user_input": "Facture d'hébergement touristique : 5 000 MAD HT. TVA au taux réduit de 10%. Client règle en espèces.",
+      "expected_output": "Débit: 5161 (Caisse) 5 500 MAD\nCrédit: 7121 (Ventes de services au Maroc) 5 000 MAD\nCrédit: 4455 (État - TVA facturée) 500 MAD"
+    },
+    {
+      "case_id": 15,
+      "user_input": "Paie du mois de mars : salaires bruts 50 000 MAD. Retenues CNSS 2 250 MAD et AMO 1 100 MAD. IR retenu à la source 5 000 MAD.",
+      "expected_output": "Débit: 6171 (Rémunérations du personnel) 50 000 MAD\nCrédit: 4441 (Caisse Nationale de Sécurité Sociale) 3 350 MAD\nCrédit: 4452 (État - Impôts sur les salaires) 5 000 MAD\nCrédit: 4432 (Rémunérations nettes dues au personnel) 41 650 MAD"
+    },
+    {
+      "case_id": 16,
+      "user_input": "Achat d'un ordinateur portable pour le bureau : 10 000 MAD HT, TVA 20%. Paiement par chèque. Amortissement linéaire sur 3 ans.",
+      "expected_output": "Débit: 2351 (Matériel informatique) 10 000 MAD\nDébit: 34551 (État - TVA récupérable sur immobilisations) 2 000 MAD\nCrédit: 5141 (Banque) 12 000 MAD"
+    },
+    {
+      "case_id": 17,
+      "user_input": "Dotation aux amortissements annuelle d'un véhicule de société acquis à 240 000 MAD HT. Durée d'amortissement : 5 ans, méthode linéaire.",
+      "expected_output": "Débit: 6191 (Dotations d'exploitation aux amortissements des immobilisations corporelles) 48 000 MAD\nCrédit: 2832 (Amortissements du matériel de transport) 48 000 MAD"
+    },
+    {
+      "case_id": 8,
+      "user_input": "Loyer mensuel d'un local commercial : 26 000 MAD HT. TVA 20%. Paiement par chèque bancaire.",
+      "expected_output": "Débit: 6131 (Locations et charges locatives) 26 000 MAD\nDébit: 34552 (État - TVA récupérable sur charges 20%) 5 200 MAD\nCrédit: 5141 (Banque) 31 200 MAD"
+    },
+    {
+      "case_id": 19,
+      "user_input": "Plein de carburant : 400 MAD TTC, TVA 20%. Carte bancaire professionnelle.",
+      "expected_output": "Débit: 6142 (Transports) 333,33 MAD\nDébit: 34552 (État - TVA récupérable sur charges 20%) 66,67 MAD\nCrédit: 5141 (Banque) 400 MAD"
+    },
+    {
+      "case_id": 20,
+      "user_input": "Facture Inwi professionnelle : 250 MAD TTC. Internet et téléphonie mobile. TVA 20%. Prélèvement automatique.",
+      "expected_output": "Débit: 61451 (Frais de téléphone) 208,33 MAD\nDébit: 34552 (État - TVA récupérable sur charges 20%) 41,67 MAD\nCrédit: 5141 (Banque) 250 MAD"
+    },
+    {
+      "case_id": 21,
+      "user_input": "Échéance mensuelle d'un emprunt bancaire : capital 5 000 MAD, intérêts 500 MAD. Prélèvement automatique.",
+      "expected_output": "Débit: 1481 (Emprunts auprès des établissements de crédit) 5 000 MAD\nDébit: 6311 (Intérêts des emprunts) 500 MAD\nCrédit: 5141 (Banque) 5 500 MAD"
+    },
+    {
+      "case_id": 22,
+      "user_input": "Relevé bancaire : commissions et frais de tenue de compte 200 MAD TTC. TVA 10% sur services bancaires.",
+      "expected_output": "Débit: 6147 (Services bancaires) 181,82 MAD\nDébit: 34552 (État - TVA récupérable sur charges 10%) 18,18 MAD\nCrédit: 5141 (Banque) 200 MAD"
+    },
+    {
+      "case_id": 23,
+      "user_input": "Déclaration TVA du mois : TVA collectée 15 000 MAD, TVA déductible 9 000 MAD. Paiement de la TVA due par virement.",
+      "expected_output": "Débit: 4455 (État - TVA facturée) 15 000 MAD\nCrédit: 34552 (État - TVA récupérable sur charges) 9 000 MAD\nCrédit: 4441 (État - TVA due) 6 000 MAD\n\nPuis :\nDébit: 4441 (État - TVA due) 6 000 MAD\nCrédit: 5141 (Banque) 6 000 MAD"
+    },
+    {
+      "case_id": 24,
+      "user_input": "Paiement de l'acompte provisionnel IS du 31 mars : 25 000 MAD par virement bancaire.",
+      "expected_output": "Débit: 3453 (État - Impôts sur les résultats) 25 000 MAD\nCrédit: 5141 (Banque) 25 000 MAD"
+    },
+    {
+      "case_id": 25,
+      "user_input": "Paiement des cotisations CNSS du mois : part patronale 4 500 MAD, part salariale 2 250 MAD. Virement bancaire.",
+      "expected_output": "Débit: 4441 (Caisse Nationale de Sécurité Sociale) 6 750 MAD\nCrédit: 5141 (Banque) 6 750 MAD"
+    },
+    {
+      "case_id": 26,
+      "user_input": "Retour de marchandises défectueuses au fournisseur : 2 000 MAD HT, TVA 20%. Avoir reçu du fournisseur.",
+      "expected_output": "Débit: 4411 (Fournisseurs) 2 400 MAD\nCrédit: 6111 (Achats de marchandises) 2 000 MAD\nCrédit: 34551 (État - TVA récupérable sur immobilisations) 400 MAD"
+    },
+    {
+      "case_id": 27,
+      "user_input": "Paiement d'une amende fiscale pour déclaration tardive de TVA : 1 500 MAD. Non déductible fiscalement.",
+      "expected_output": "Débit: 6581 (Charges diverses) 1 500 MAD\nCrédit: 5141 (Banque) 1 500 MAD"
+    },
+    {
+      "case_id": 28,
+      "user_input": "Quel est le taux normal de la TVA au Maroc en 2026 ?",
+      "expected_output": "Le taux normal de la TVA au Maroc en 2026 est de 20% [citation:2][citation:20]."
+    },
+    {
+      "case_id": 29,
+      "user_input": "Quels sont les taux réduits de la TVA au Maroc et à quels produits s'appliquent-ils ?",
+      "expected_output": "Au Maroc, les taux réduits de la TVA sont : 14% pour le transport domestique (hors train), 10% pour les services bancaires, l'hôtellerie et la restauration (hors alcool), les produits pétroliers, 7% pour l'eau et l'électricité publiques ainsi que les médicaments et produits pharmaceutiques [citation:2]."
+    },
+    {
+      "case_id": 30,
+      "user_input": "Quel est le taux de l'IS au Maroc pour une PME dont le bénéfice net est de 500 000 MAD en 2026 ?",
+      "expected_output": "Pour une PME dont le bénéfice net fiscal est inférieur à 100 millions de MAD, le taux de l'IS est unifié à 20% à compter de 2026 [citation:16][citation:10]."
+    },
+    {
+      "case_id": 31,
+      "user_input": "Quel est le taux de l'IS pour les sociétés dont le bénéfice net fiscal est supérieur ou égal à 100 millions de MAD en 2026 ?",
+      "expected_output": "Pour les sociétés non financières dont le bénéfice net fiscal est égal ou supérieur à 100 millions de MAD, le taux de l'IS est de 35% en 2026 [citation:16][citation:4]."
+    },
+    {
+      "case_id": 32,
+      "user_input": "Quel est le taux de l'IS pour les banques et sociétés d'assurance au Maroc en 2026 ?",
+      "expected_output": "Le taux de l'IS pour les établissements de crédit, les organismes assimilés, Bank Al-Maghrib, la Caisse de Dépôt et de Gestion, et les entreprises d'assurances et de réassurance est de 40% en 2026 [citation:16][citation:4]."
+    },
+    {
+      "case_id": 33,
+      "user_input": "Quel est le taux de cotisation CNSS pour l'employeur et pour l'employé au Maroc en 2026 ?",
+      "expected_output": "En 2026, le taux global de cotisation à la CNSS est de 21,09% pour l'employeur et de 6,74% pour l'employé [citation:18][citation:12]."
+    },
+    {
+      "case_id": 34,
+      "user_input": "Quelle est la date limite de dépôt de la déclaration annuelle du revenu global (IR) pour les revenus professionnels au titre de l'exercice 2025 ?",
+      "expected_output": "Pour les contribuables titulaires de revenus professionnels soumis à l'IR selon le régime du résultat net réel ou simplifié, la date limite de souscription de la déclaration annuelle du revenu global au titre de l'exercice 2025 est fixée avant le 1er mai 2026 [citation:5]."
+    },
+    {
+      "case_id": 35,
+      "user_input": "Quelle est la date limite de déclaration des revenus de capitaux mobiliers de source étrangère pour l'année 2025 ?",
+      "expected_output": "La déclaration annuelle des revenus et profits de capitaux mobiliers de source étrangère non soumis à retenue à la source doit être souscrite avant le 1er avril de l'année suivante, soit avant le 1er avril 2026 pour les revenus perçus en 2025 [citation:11]."
+    },
+    {
+      "case_id": 36,
+      "user_input": "Quel est le montant alloué aux secteurs de l'éducation et de la santé dans la loi de finances 2026 au Maroc ?",
+      "expected_output": "La loi de finances 2026 alloue un budget combiné de 140 milliards de dirhams aux secteurs de l'éducation et de la santé, soit une augmentation de 21 milliards de dirhams par rapport à 2025 [citation:1][citation:7]."
+    },
+    {
+      "case_id": 37,
+      "user_input": "Quel est le taux de TVA applicable aux exportations de biens et services au Maroc ?",
+      "expected_output": "Les exportations de biens et services sont exonérées de TVA avec droit à déduction, soit un taux de 0% [citation:2]."
+    },
+    {
+      "case_id": 38,
+      "user_input": "Quel est le taux de la cotisation minimale au Maroc ?",
+      "expected_output": "Le taux de droit commun de la cotisation minimale est de 0,25% [citation:10]."
+    },
+    {
+      "case_id": 39,
+      "user_input": "Quelles sont les principales priorités de la loi de finances 2026 au Maroc ?",
+      "expected_output": "La loi de finances 2026 au Maroc s'articule autour de quatre priorités principales : le renforcement des acquis économiques pour consolider la position du Maroc parmi les pays émergents, le lancement de la nouvelle génération de programmes de développement territorial intégré, la poursuite de la consolidation de l'État social, et la préservation des équilibres des finances publiques tout en poursuivant les réformes structurelles majeures [citation:1][citation:7]."
+    },
+    {
+      "case_id": 40,
+      "user_input": "Le sucre raffiné bénéficie-t-il d'un taux de TVA réduit au Maroc en 2026 ?",
+      "expected_output": "Le sucre raffiné ou aggloméré fait l'objet d'une progression graduelle de son taux de TVA pour atteindre 10% en 2026 [citation:8]."
+    },
+    {
+      "case_id": 41,
+      "user_input": "Quel est le taux de TVA applicable à l'énergie électrique au Maroc ?",
+      "expected_output": "Le taux de TVA appliqué à l'énergie électrique sera progressivement aligné sur le taux de 20% sur une période de trois ans [citation:8]."
+    },
+    {
+      "case_id": 42,
+      "user_input": "Quel est le montant du budget alloué au fonds de compensation (صندوق المقاصة) pour maintenir la stabilité des prix des produits de base en 2026 ?",
+      "expected_output": "Le gouvernement a alloué 14 milliards de dirhams au fonds de compensation pour 2026 afin de garantir la stabilité des prix des produits de base [citation:1]."
+    },
+    {
+      "case_id": 43,
+      "user_input": "Le Maroc a-t-il retrouvé sa notation « investment grade » en 2025 ?",
+      "expected_output": "Oui, le Maroc a retrouvé sa notation « investment grade » de l'agence de notation américaine Standard & Poor's en septembre 2025 [citation:19]."
+    },
+    {
+      "case_id": 44,
+      "user_input": "Quel est le taux de croissance économique prévu pour le Maroc en 2025 ?",
+      "expected_output": "Le taux de croissance de l'économie nationale est estimé à 4,8% pour l'année 2025, porté par la dynamique des secteurs non agricoles et la contribution croissante des secteurs à haute valeur ajoutée [citation:19]."
+    },
+    {
+      "case_id": 45,
+      "user_input": "Combien de postes budgétaires nouveaux sont créés pour les secteurs de l'éducation et de la santé dans la loi de finances 2026 ?",
+      "expected_output": "Plus de 27 000 postes budgétaires nouveaux sont créés pour soutenir les ressources humaines dans les secteurs de l'éducation et de la santé [citation:1][citation:7]."
+    },
+    {
+      "case_id": 46,
+      "user_input": "Quel est le taux de TVA applicable aux médicaments et produits pharmaceutiques au Maroc ?",
+      "expected_output": "Les médicaments et produits pharmaceutiques bénéficient d'un taux de TVA réduit de 7% [citation:2]."
+    },
+    {
+      "case_id": 47,
+      "user_input": "Les opérations bancaires sont-elles soumises à la TVA au Maroc et à quel taux ?",
+      "expected_output": "Oui, les services bancaires sont soumis à la TVA au taux réduit de 10% [citation:2]."
+    },
+    {
+      "case_id": 48,
+      "user_input": "Quel est le taux de TVA applicable aux établissements hôteliers et restaurants au Maroc (hors alcool) ?",
+      "expected_output": "Les services d'hébergement et de restauration (hors boissons alcoolisées) bénéficient d'un taux de TVA réduit de 10% [citation:2]."
+    },
+    {
+      "case_id": 49,
+      "user_input": "Quel est le taux de la cotisation AMO (Assurance Maladie Obligatoire) au Maroc en 2026 pour l'employeur et l'employé ?",
+      "expected_output": "En 2026, le taux de cotisation à l'AMO est de 4,11% pour l'employeur et de 2,26% pour l'employé [citation:6]."
+    },
+    {
+      "case_id": 50,
+      "user_input": "Quel est le taux de la cotisation patronale pour les allocations familiales (家庭津贴) au Maroc en 2026 ?",
+      "expected_output": "Le taux de cotisation patronale pour les allocations familiales est de 6,40% en 2026, entièrement à la charge de l'employeur [citation:6]."
+    },
+    {
+      "case_id": 51,
+      "user_input": "Le taux de l'IS pour les sociétés industrielles avec un bénéfice net inférieur à 100 millions de MAD est-il de 20% en 2026 ?",
+      "expected_output": "Oui, à compter de 2026, le taux de l'IS pour les sociétés industrielles (et toutes sociétés non financières) dont le bénéfice net fiscal est inférieur à 100 millions de MAD est de 20% [citation:16][citation:4]."
+    },
+    {
+      "case_id": 52,
+      "user_input": "Quand la déclaration trimestrielle de TVA du 2ème trimestre 2026 doit-elle être déposée au Maroc ?",
+      "expected_output": "La déclaration du chiffre d'affaires du 2ème trimestre 2026 et le versement de la TVA correspondante doivent être effectués au plus tard le 31 juillet 2026 [citation:17]."
+    }
+]
