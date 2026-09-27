@@ -48,3 +48,4 @@ glmocr
 pytest
 ragas
 python-dotenv
+mem0ai
