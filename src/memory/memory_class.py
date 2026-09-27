@@ -55,11 +55,5 @@ class Memory:
         return f"{system}\n\n{memory_block}User: {self.user_prompt}\nAssistant:"
 
     def semantic_memory_for_facts(self,llm_output: str) -> dict [str, str] | None:
-        """Heuristic: store preferences or explicit facts."""
-        triggers = ["I prefer", "I usually", "My name is", "I am working on", "I live in"]
-        lower_msg = self.user_prompt.lower()
-        if any(t.lower() in lower_msg for t in triggers):
-            return {"user_id": self.user_id, "agent_id": self.agent_id, "text": self.user_prompt,"llm_output": llm_output,"timestamp": datetime.now().isoformat()}
-        # optionally parse structured memory using another LLM call
-        return None
+        return {"user_id": self.user_id, "agent_id": self.agent_id, "text": self.user_prompt,"llm_output": llm_output,"timestamp": datetime.now().isoformat()}
     
