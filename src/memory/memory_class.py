@@ -42,7 +42,18 @@ class Memory:
             },
         ],
         )
-    def build_prompt(self,memories: list[dict]) -> str:
+    def format_context_for_systeme(self, memories: list[dict]) -> str:
+        """ format the memory responce to be passed to systeme prompt as configurable"""
+        
+        if not memories:
+            return ""
+        return "\n".join(f"- {m}" for m in memories)
+
+    def build_prompt(self, memories: list[dict]) -> str:
+        """Deprecated: baked a rival system persona + the raw user turn into
+        one HumanMessage, which then got permanently written into the
+        LangGraph checkpointer's thread history on every call. Kept only for
+        reference; use format_context() + chat_node's config instead."""
         memory_block = ""
         if memories:
             context = "\n".join(f"- {m}" for m in memories)
@@ -56,4 +67,3 @@ class Memory:
 
     def semantic_memory_for_facts(self,llm_output: str) -> dict [str, str] | None:
         return {"user_id": self.user_id, "agent_id": self.agent_id, "text": self.user_prompt,"llm_output": llm_output,"timestamp": datetime.now().isoformat()}
-    

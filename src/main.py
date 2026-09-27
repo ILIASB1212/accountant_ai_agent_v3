@@ -45,19 +45,22 @@ def get_response(user_text: str):
         return "Please enter a question."
 
     agent = load_agent()
-
+    memory=Memory(user_prompt=user_text, user_id="ilias", agent_id="agent1")
+    long_tm=memory.retrive()
+    build_prompt=memory.build_prompt(long_tm)
+    memory_context = memory.format_context_for_systeme(long_tm)
+ 
     config = {
         "configurable": {
             "thread_id": (
                 st.session_state.session_name
                 or "default_thread"
-            )
+            ),
+            # picked up by chat_node in agent.py; never enters the message list
+            "memory_context": memory_context,
         }
     }
-    memory=Memory(user_prompt=user_text, user_id="ilias", agent_id="agent1")
-    long_tm=memory.retrive()
-    build_prompt=memory.build_prompt(long_tm)
-    agent_response = agent.invoke({"messages": [HumanMessage(content=build_prompt)]},config=config)
+    agent_response = agent.invoke({"messages": [HumanMessage(content=user_text)]},config=config)
     x=memory.semantic_memory_for_facts(agent_response["messages"][-1].content)
     if x:
         memory.store_memory(x)
