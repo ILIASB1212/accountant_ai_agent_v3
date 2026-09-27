@@ -13,6 +13,7 @@ from typing_extensions import Annotated
 from langgraph.graph import add_messages
 from src.tools.cgnc import cgnc_tool
 from src.tools.tax import CGI_tool
+from src.tools.la_rac import ras_tool
 from typing import TypedDict,List
 from  dotenv import  load_dotenv
 import os
@@ -25,7 +26,7 @@ os.environ["LANGSMITH_API_KEY"] = os.getenv("LANGSMITH_API_KEY")
 #os.environ["OPENROUTER_API_KEY"] = os.getenv("OPENROUTER_API_KEY") 
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")  
 
-tools=[cgnc_tool,finance_law_tool,CGI_tool,plan_comptable_tool,search]
+tools=[cgnc_tool,finance_law_tool,CGI_tool,plan_comptable_tool,search,ras_tool]
 
 MODEL = "openai:gpt-4o-mini"
 llm = init_chat_model(model=MODEL, temperature=0)
