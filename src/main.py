@@ -8,6 +8,7 @@ import streamlit as st
 from langchain_core.messages import HumanMessage
 
 from src.tools.glm_ocr import ocr_document
+from src.memory.memory_class import Memory
 
 
 st.title("Agentic Workflow: Moroccan Accounting & Tax Assistant")
@@ -53,17 +54,14 @@ def get_response(user_text: str):
             )
         }
     }
-
-    result = agent.invoke(
-        {
-            "messages": [
-                HumanMessage(content=user_text)
-            ]
-        },
-        config=config
-    )
-
-    return result["messages"][-1].content
+    memory=Memory(user_prompt=user_text, user_id="ilias", agent_id="agent1")
+    long_tm=memory.retrive()
+    build_prompt=memory.build_prompt(long_tm)
+    agent_response = agent.invoke({"messages": [HumanMessage(content=build_prompt)]},config=config)
+    x=memory.semantic_memory_for_facts(agent_response["messages"][-1].content)
+    if x:
+        memory.store_memory(x)
+    return agent_response["messages"][-1].content
 
 
 # ============================================================

@@ -39,7 +39,7 @@ llm_with_tools=llm.bind_tools(tools)
 
 
 CHAT_PROMPT = """You are a Moroccan accounting and tax assistant.
-                    You MUST always use a tool. NEVER answer from memory.
+                    You MUST always use a tool.
 
                     Tool routing rules:
                     1. Account number needed → plan_comptable_marocain
@@ -51,14 +51,7 @@ CHAT_PROMPT = """You are a Moroccan accounting and tax assistant.
                     NEVER invent article numbers or account codes."""
 
 
-STRUCTURING_PROMPT = """You are a Moroccan accounting and tax assistant.
-                    You received tool results. Now produce a clear, structured final answer in the same language as the user.
 
-                    Rules:
-                    - Cite the source tool used
-                    - Use tables for journal entries (Débit / Crédit / Montant)
-                    - If the tool result doesn't contain the answer, say so explicitly
-                    - NEVER invent article numbers, account codes, or tax rates not present in the retrieved text"""
 
 
 
@@ -72,10 +65,6 @@ def chat_node(state: AgentState) -> dict:
     return {"messages": [response]}
 
 
-def agent_structuring_response(state: AgentState):
-    system_message = SystemMessage(content=STRUCTURING_PROMPT)
-    all_messages = [system_message] + state["messages"]
-    return {"messages": [llm_with_tools.invoke(all_messages)]}
 
 
 
