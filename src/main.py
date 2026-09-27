@@ -47,7 +47,6 @@ def get_response(user_text: str):
     agent = load_agent()
     memory=Memory(user_prompt=user_text, user_id="ilias", agent_id="agent1")
     long_tm=memory.retrive()
-    build_prompt=memory.build_prompt(long_tm)
     memory_context = memory.format_context_for_systeme(long_tm)
  
     config = {
