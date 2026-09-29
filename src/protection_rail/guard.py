@@ -4,23 +4,28 @@ from guardrails_ai.restricttotopic import RestrictToTopic
 from langchain_core.messages import HumanMessage, AIMessage
 
 # 1. Setup your Guardrails AI protection
-protection = Guard().use_many(
-    DetectJailbreak(threshold=0.9, on_fail="exception"),
+protection = Guard().use(
+    DetectJailbreak(threshold=0.8, on_fail="exception"),
     RestrictToTopic(
-        valid_topics=["economics","finance", "accounting", "exchange rates", "tax", "moroccan law"],
+        valid_topics=[
+            "economics", "finance", "accounting", "exchange rates", "tax", "moroccan law",
+            "greetings and small talk",
+            "general assistant conversation, such as asking what the assistant remembers about the user",
+        ],
+        invalid_topics=["politics", "religion", "violence", "adult content", "fraud"],
         disable_llm=True,  # local zero-shot classifier only — no extra latency/cost from an LLM fallback call
         on_fail="exception",
-    ),
-)
+    )
+    )
 
 # 2. Define the Guardrail Node
 def guardrail_node(state: dict) -> dict:
-    last_message = state["messages"][-1]
+    context_message = state["messages"][-1]
  
-    if not isinstance(last_message, HumanMessage):
+    if not isinstance(context_message, HumanMessage):
         return {"messages": [], "blocked": False}
  
-    user_text = last_message.content
+    user_text = context_message.content
  
     try:
         protection.validate(user_text)

@@ -6,7 +6,7 @@ from src.tools.finance_law import finance_law_tool
 from langgraph.graph import StateGraph, START, END 
 from langchain.chat_models import init_chat_model
 from langchain_openrouter import ChatOpenRouter
-from src.guardrails.guard import guardrail_node
+from src.protection_rail.guard import guardrail_node
 from langgraph.prebuilt import tools_condition
 from src.tools.web_search_tool import search
 from langgraph.prebuilt import ToolNode

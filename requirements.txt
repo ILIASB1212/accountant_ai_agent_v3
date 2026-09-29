@@ -33,7 +33,6 @@ presidio-analyzer
 presidio-anonymizer
 guardrails-ai
 guardrails-ai-detect-jailbreak 
-guardrails-ai-detect-prompt-injection
 guardrails-ai-restrict-to-topic
 # ocr model 
 torch==2.10.0
@@ -52,4 +51,8 @@ pytest
 ragas
 python-dotenv
 mem0ai
+#################"
 cffi==1.17
+cryptography>=43.0.3
+rich>=13.9.4
+proto-plus>=1.28.0
