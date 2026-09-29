@@ -6,6 +6,7 @@ from src.tools.finance_law import finance_law_tool
 from langgraph.graph import StateGraph, START, END 
 from langchain.chat_models import init_chat_model
 from langchain_openrouter import ChatOpenRouter
+from src.guardrails.guard import guardrail_node
 from langgraph.prebuilt import tools_condition
 from src.tools.web_search_tool import search
 from langgraph.prebuilt import ToolNode
@@ -52,7 +53,8 @@ CHAT_PROMPT = """You are a Moroccan accounting and tax assistant.
 
 
 class AgentState(TypedDict):
-    messages:Annotated[List,add_messages]
+    messages: Annotated[List, add_messages]
+    blocked: bool
 
 def chat_node(state: AgentState, config: RunnableConfig) -> dict:
     # Mem0 long-term memory arrives via config, not via the message list,
@@ -71,8 +73,8 @@ def chat_node(state: AgentState, config: RunnableConfig) -> dict:
     response = llm_with_tools.invoke(all_messages)
     return {"messages": [response]}
 
-
-
+def route_after_guardrail(state: AgentState) -> str:
+    return "__end__" if state.get("blocked") else "chat"
 
 
 tool_node=ToolNode(tools)
@@ -82,10 +84,17 @@ tool_node=ToolNode(tools)
 builder = StateGraph(AgentState)
 builder.add_node("chat", chat_node)
 builder.add_node("tool_node", tool_node)
+builder.add_node("guardrail", guardrail_node)
+
+# Connect the flow
 #builder.add_node("structures", agent_structuring_response)
 
-
-builder.add_edge(START, "chat")
+builder.add_edge(START, "guardrail")
+builder.add_conditional_edges(
+    "guardrail",
+    route_after_guardrail,
+    {"chat": "chat", "__end__": END},
+)
 builder.add_conditional_edges(
     "chat",
     tools_condition,

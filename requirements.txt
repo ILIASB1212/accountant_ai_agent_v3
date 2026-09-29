@@ -28,14 +28,17 @@ fastapi
 psycopg_pool
 psycopg[binary]
 # guardrails
-guardrail-ai
-litellm
+litellm==1.99.2
 presidio-analyzer
 presidio-anonymizer
+guardrails-ai
+guardrails-ai-detect-jailbreak 
+guardrails-ai-detect-prompt-injection
+guardrails-ai-restrict-to-topic
 # ocr model 
 torch==2.10.0
 torchvision==0.25.0
-transformers>=5.3.0
+transformers==5.3.0
 Pillow==12.1.1
 matplotlib==3.10.8
 einops==0.8.2
@@ -49,3 +52,4 @@ pytest
 ragas
 python-dotenv
 mem0ai
+cffi==1.17
