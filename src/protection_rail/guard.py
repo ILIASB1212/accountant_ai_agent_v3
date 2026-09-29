@@ -11,9 +11,11 @@ protection = Guard().use(
             "economics", "finance", "accounting", "exchange rates", "tax", "moroccan law",
             "greetings and small talk",
             "general assistant conversation, such as asking what the assistant remembers about the user",
+            "company historic client and deals and operations",
+            "friendly conversation"
         ],
         invalid_topics=["politics", "religion", "violence", "adult content", "fraud"],
-        disable_llm=True,  # local zero-shot classifier only — no extra latency/cost from an LLM fallback call
+        disable_llm=False,  # local zero-shot classifier only — no extra latency/cost from an LLM fallback call
         on_fail="exception",
     )
     )
@@ -34,4 +36,6 @@ def guardrail_node(state: dict) -> dict:
         refusal = AIMessage(
             content="I cannot process this request due to safety or topic policies."
         )
+        print(f"[guardrail] blocked input: {user_text!r}")
+        print(f"[guardrail] reason: {e}")
         return {"messages": [refusal], "blocked": True}
