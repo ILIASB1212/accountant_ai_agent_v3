@@ -56,3 +56,5 @@ cffi==1.17
 cryptography>=43.0.3
 rich>=13.9.4
 proto-plus>=1.28.0
+
+pyrit
