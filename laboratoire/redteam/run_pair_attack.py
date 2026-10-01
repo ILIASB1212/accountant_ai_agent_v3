@@ -105,8 +105,13 @@ async def main():
         model_name="gpt-5",
         endpoint="https://api.openai.com/v1",
         api_key=os.environ["OPENAI_API_KEY"],
-        max_tokens=800,
-        
+        # gpt-5 is a reasoning model: max_completion_tokens covers hidden
+        # reasoning tokens AND the visible answer combined. At 800 it was
+        # spending the whole budget "thinking" and returning empty output
+        # (204). Bump the budget and tell it not to reason hard -- crafting
+        # an adversarial prompt doesn't need deep reasoning.
+        max_completion_tokens=800,
+        extra_body_parameters={"reasoning_effort": "low"},
     )
     scale_scorer = SelfAskScaleScorer(
     chat_target=adversarial_chat

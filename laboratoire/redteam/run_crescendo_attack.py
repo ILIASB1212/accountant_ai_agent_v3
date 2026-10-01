@@ -63,8 +63,8 @@ async def run_one(objective: str, target, adversarial_chat, scorer) -> dict:
         objective_target=target,
         attack_adversarial_config=AttackAdversarialConfig(target=adversarial_chat),
         attack_scoring_config=AttackScoringConfig(objective_scorer=scorer),
-        max_turns=8,
-        max_backtracks=5,
+        max_turns=3,
+        max_backtracks=3,
     )
 
     print(f"\n▶ Crescendo: {objective[:70]}...")
@@ -103,7 +103,13 @@ async def main():
             model_name="gpt-5",
             endpoint="https://api.openai.com/v1",
             api_key=os.environ["OPENAI_API_KEY"],
-            max_tokens=800
+            # Same fix as run_pair_attack.py: gpt-5 rejects max_tokens outright
+            # (reasoning models need max_completion_tokens), and even with that
+            # renamed, 800 was too small a combined reasoning+output budget and
+            # came back empty. Bump the budget and keep reasoning effort low --
+            # this task doesn't need deep reasoning, just a crafted prompt.
+            max_completion_tokens=800,
+            extra_body_parameters={"reasoning_effort": "low"},
         )
     scorer = SelfAskTrueFalseScorer(
         chat_target=adversarial_chat,
@@ -120,7 +126,7 @@ async def main():
             ),
     )
 
-    REPEATS = 2
+    REPEATS = 1
 
     results = []
     for objective in OBJECTIVES:
