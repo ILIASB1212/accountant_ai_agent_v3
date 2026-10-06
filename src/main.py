@@ -5,13 +5,13 @@ from pathlib import Path
 from datetime import datetime
 
 import streamlit as st
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, AIMessageChunk
 
 from src.tools.glm_ocr import ocr_document
 from src.memory.memory_class import Memory
 
 
-st.title("Agentic Workflow: Moroccan Accounting & Tax Assistant")
+st.title("Internal knowledge Base RAG: Moroccan Accounting & Tax Assistant")
 
 
 # ============================================================
@@ -36,19 +36,19 @@ def load_agent():
 
 
 # ============================================================
-# GET RESPONSE
+# GET RESPONSE (STREAMING VERSION - FILTERED FOR CONTENT ONLY)
 # ============================================================
 
 def get_response(user_text: str):
-
     if not user_text or not user_text.strip():
-        return "Please enter a question."
+        yield "Please enter a question."
+        return
 
     agent = load_agent()
-    memory=Memory(user_prompt=user_text, user_id="ilias", agent_id="agent1")
-    long_tm=memory.retrive()
+    memory = Memory(user_prompt=user_text, user_id="ilias", agent_id="agent1")
+    long_tm = memory.retrive()
     memory_context = memory.format_context_for_systeme(long_tm)
- 
+
     config = {
         "configurable": {
             "thread_id": (
@@ -59,11 +59,77 @@ def get_response(user_text: str):
             "memory_context": memory_context,
         }
     }
-    agent_response = agent.invoke({"messages": [HumanMessage(content=user_text)]},config=config)
-    x=memory.semantic_memory_for_facts(agent_response["messages"][-1].content)
-    if x:
-        memory.store_memory(x)
-    return agent_response["messages"][-1].content
+
+    full_response = ""
+    try:
+        # Try to stream the response
+        for chunk in agent.stream(
+            {"messages": [HumanMessage(content=user_text)]},
+            config=config,
+            stream_mode="messages"
+        ):
+            # Extract ONLY the AI-generated content chunks, ignore metadata/tool calls
+            content = ""
+
+            # Handle direct AIMessageChunk objects (these contain the actual LLM responses)
+            if isinstance(chunk, AIMessageChunk):
+                content = chunk.content
+            # Handle tuple format where first element might be AIMessageChunk
+            elif isinstance(chunk, tuple) and len(chunk) >= 1:
+                first_elem = chunk[0]
+                if isinstance(first_elem, AIMessageChunk):
+                    content = first_elem.content
+            # Handle dict format that might contain AI-generated content
+            elif isinstance(chunk, dict):
+                # Look for AIMessageChunk-like content in dict
+                if 'content' in chunk and isinstance(chunk['content'], str):
+                    content = chunk['content']
+                # Sometimes the content is nested differently
+                elif 'messages' in chunk and isinstance(chunk['messages'], list):
+                    # Look for the latest AI message in messages
+                    for msg in reversed(chunk['messages']):
+                        if hasattr(msg, 'content') and isinstance(msg.content, str):
+                            content = msg.content
+                            break
+                        elif isinstance(msg, dict) and msg.get('type') == 'ai' and 'content' in msg:
+                            content = msg['content']
+                            break
+
+            # Only yield non-empty content from AI messages to avoid spamming empty chunks
+            # and ignore pure metadata/tool call chunks
+            if content and isinstance(content, str) and content.strip():
+                full_response += content
+                yield content
+    except Exception as e:
+        # If streaming fails, fall back to non-streaming
+        agent_response = agent.invoke({"messages": [HumanMessage(content=user_text)]}, config=config)
+        fallback_content = agent_response["messages"][-1].content
+        if fallback_content and isinstance(fallback_content, str) and fallback_content.strip():
+            full_response = fallback_content
+            yield full_response
+        else:
+            # If fallback also empty, use default message
+            full_response = "I’m sorry, but I can’t comply with that request."
+            yield full_response
+
+    # If after streaming (and fallback) we still have no response, provide a default
+    if not full_response:
+        full_response = "I’m sorry, but I can’t comply with that request."
+        yield full_response
+
+    # Update memory with the full response after streaming is complete
+    # Wrap in try/except to prevent crashes if memory storage fails
+    try:
+        x = memory.semantic_memory_for_facts(full_response)
+        if x:
+            # Additional validation to ensure we have valid data
+            if (isinstance(x, dict) and
+                x.get("text") and isinstance(x["text"], str) and x["text"].strip() and
+                x.get("llm_output") and isinstance(x["llm_output"], str) and x["llm_output"].strip()):
+                memory.store_memory(x)
+    except Exception as mem_error:
+        # If memory storage fails, continue without storing (don't crash the app)
+        pass
 
 
 # ============================================================
@@ -186,12 +252,15 @@ if text:
     # --------------------------------------------------------
 
     if st.session_state.ocr_result:
+        # Consume the OCR result for this question only, then clear it
+        ocr_context = st.session_state.ocr_result
+        st.session_state.ocr_result = None  # Clear after use to prevent persistence
 
         final_prompt = f"""
 The user uploaded a document and GLM-OCR extracted the following text:
 
 --- OCR TEXT ---
-{st.session_state.ocr_result}
+{ocr_context}
 --- END OCR TEXT ---
 
 User's question:
@@ -220,19 +289,20 @@ Use the OCR text as context when answering the user's question.
         st.markdown(text)
 
     # --------------------------------------------------------
-    # Generate assistant response
+    # Generate assistant response (STREAMED - CONTENT ONLY)
     # --------------------------------------------------------
 
     with st.chat_message("assistant"):
-
-        with st.spinner("Thinking..."):
-            response = get_response(final_prompt)
+        message_placeholder = st.empty()
+        full_response = ""
+        for chunk in get_response(final_prompt):
+            full_response += chunk
+            message_placeholder.markdown(full_response + "▌")
+        message_placeholder.markdown(full_response)
 
         elapsed = (
             datetime.now() - start
         ).total_seconds()
-
-        st.markdown(response)
 
         st.caption(
             f"Response generated in {elapsed:.2f} seconds"
@@ -245,6 +315,6 @@ Use the OCR text as context when answering the user's question.
     st.session_state.messages.append(
         {
             "role": "assistant",
-            "content": response
+            "content": full_response
         }
     )

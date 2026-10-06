@@ -6,6 +6,9 @@ import streamlit as st
 import fitz
 import torch
 
+from transformers import LightOnOcrForConditionalGeneration, LightOnOcrProcessor
+
+
 from transformers import (
     AutoProcessor,
     GlmOcrForConditionalGeneration
@@ -22,47 +25,59 @@ import tempfile
 from pathlib import Path
 
 
-def resize_image_for_ocr(image_path: str):
-    image = Image.open(image_path)
+import io
+import tempfile
+from PIL import Image
 
-    new_width = image.width // 2
-    new_height = image.height // 2
+def resize_image_for_ocr(image_path: str, target_kb: int = 250,
+                         min_quality: int = 30,
+                         min_scale: float = 0.15) -> str:
+    image = Image.open(image_path).convert("RGB")
+    target_bytes = target_kb * 1024
 
-    resized_path = tempfile.NamedTemporaryFile(
-        delete=False,
-        suffix=".jpg"
-    ).name
+    scale = 1.0
+    quality = 85
+    best_bytes = None
 
-    image.resize(
-        (new_width, new_height),
-        Image.Resampling.LANCZOS
-    ).convert("RGB").save(
-        resized_path,
-        "JPEG",
-        quality=85
-    )
+    while True:
+        w = max(1, int(image.width * scale))
+        h = max(1, int(image.height * scale))
 
-    return resized_path
+        buf = io.BytesIO()
+        image.resize((w, h), Image.Resampling.LANCZOS).save(
+            buf, "JPEG", quality=quality, optimize=True
+        )
+        best_bytes = buf.getvalue()
+
+        if (len(best_bytes) <= target_bytes
+                or quality <= min_quality
+                or scale <= min_scale):
+            break
+
+        if quality > 60:
+            quality -= 10
+        else:
+            scale *= 0.85
+
+    out = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
+    out.write(best_bytes)
+    out.close()
+    return out.name
 
 
 # ============================================================
 # MODEL
 # ============================================================
-
-model_id = "zai-org/GLM-OCR"
-
-
 @st.cache_resource
 def load_ocr_model():
-
-    processor = AutoProcessor.from_pretrained(
-        model_id
-    )
-
-    model = GlmOcrForConditionalGeneration.from_pretrained(
+    model_id = "lightonai/LightOnOCR-2-1B"
+    model = LightOnOcrForConditionalGeneration.from_pretrained(
         model_id,
-        device_map="auto",
+        torch_dtype=torch.bfloat16,
+        device_map="auto",                        # Offloads what fits onto GPU
+        max_memory={0: "3GiB", "cpu": "10GiB"},   # Reserve some GPU headroom
     )
+    processor = LightOnOcrProcessor.from_pretrained(model_id)
 
     return processor, model
 
@@ -78,61 +93,30 @@ def ocr_image(image_path: str):
             f"Image file not found: {image_path}"
         )
 
-    try:
+    
 
+    try:
         processor, model = load_ocr_model()
 
-        messages = [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image",
-                        "url": image_path
-                    },
-                    {
-                        "type": "text",
-                        "text": "Text Recognition:"
-                    }
-                ]
-            }
-        ]
-
+        image = Image.open(image_path).convert("RGB")
+        image.thumbnail((768, 768))  # Keep image small for your 4GB VRAM
+        conversation = [{"role": "user", "content": [{"type": "image", "image": image}]}]
         inputs = processor.apply_chat_template(
-            messages,
-            tokenize=True,
-            add_generation_prompt=True,
-            return_dict=True,
-            return_tensors="pt",
-        ).to(model.device)
-
-        # Some Transformers/model versions can include this field,
-        # but GLM-OCR does not need it for generation.
-        inputs.pop("token_type_ids", None)
-
+               conversation,
+               add_generation_prompt=True,
+               tokenize=True,
+               return_dict=True,
+               return_tensors="pt",
+           )
+       
+           # Move inputs to the same device as the model's first layer
+        inputs = {k: v.to(model.device) for k, v in inputs.items()}
         with torch.inference_mode():
-            output = model.generate(
-                **inputs,
-                max_new_tokens=128
-            )
-
-        # Decode only newly generated tokens.
-        input_length = inputs["input_ids"].shape[1]
-
-        text = processor.decode(
-            output[0][input_length:],
-            skip_special_tokens=True
-        )
-
-        # Remove unwanted image tokens/instruction text.
-        text = text.replace("<|image|>", "")
-        text = text.replace("Text Recognition:", "")
-
-        # Clean whitespace.
-        text = " ".join(text.split())
-
-        return text.strip()
-
+            output_ids = model.generate(**inputs, max_new_tokens=256, do_sample=False)
+       
+        generated_ids = output_ids[0, inputs["input_ids"].shape[1]:]
+        output_text = processor.decode(generated_ids, skip_special_tokens=True)
+        return output_text
     except Exception as e:
 
         raise RuntimeError(
@@ -144,58 +128,35 @@ def ocr_image(image_path: str):
 # PDF OCR
 # ============================================================
 
-def ocr_pdf(pdf_path: str):
+import os
+import fitz  # PyMuPDF
 
+
+def ocr_pdf(pdf_path: str) -> str | None:
+    """
+    Extract text from a PDF using PyMuPDF's native text layer.
+    No OCR / image rendering involved.
+    """
     if not os.path.isfile(pdf_path):
-        raise FileNotFoundError(
-            f"PDF file not found: {pdf_path}"
-        )
+        raise FileNotFoundError(f"PDF file not found: {pdf_path}")
 
     page_results = []
 
     try:
+        with fitz.open(pdf_path) as document:
 
-        document = fitz.open(pdf_path)
+            if document.page_count == 0:
+                return None
 
-        if document.page_count == 0:
-            document.close()
-            return None
-
-        # Render PDF pages to PNG and run the same local
-        # GLM-OCR image pipeline on every page.
-        with tempfile.TemporaryDirectory() as temp_dir:
-
-            for page_number, page in enumerate(document):
-
-                # 200 DPI gives a good balance between OCR
-                # quality and memory usage.
-                matrix = fitz.Matrix(
-                            150 / 72,
-                            150 / 72
-                        )
-
-                pixmap = page.get_pixmap(
-                    matrix=matrix,
-                    alpha=False
-                )
-
-                page_path = Path(temp_dir) / (
-                    f"page_{page_number + 1}.png"
-                )
-
-                pixmap.save(str(page_path))
-
-                page_text = ocr_image(
-                    str(page_path)
-                )
+            for page_number, page in enumerate(document, start=1):
+                # "text" = plain reading-order text.
+                # Alternatives: "blocks", "words", "dict", "rawdict", "html", "xml"
+                page_text = page.get_text("text").strip()
 
                 if page_text:
                     page_results.append(
-                        f"--- Page {page_number + 1} ---\n"
-                        f"{page_text}"
+                        f"--- Page {page_number} ---\n{page_text}"
                     )
-
-        document.close()
 
         if not page_results:
             return None
@@ -203,9 +164,8 @@ def ocr_pdf(pdf_path: str):
         return "\n\n".join(page_results)
 
     except Exception as e:
-
         raise RuntimeError(
-            f"Error during PDF OCR processing: {e}"
+            f"Error during PDF text extraction: {e}"
         ) from e
 
 
