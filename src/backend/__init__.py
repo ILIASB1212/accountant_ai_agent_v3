@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from src.backend.agent.endpoint import agent_router
 from contextlib import asynccontextmanager
-from src.backend.db.main import init_db, engine
+from src.backend.db.main import init_db, async_engine
 
 @asynccontextmanager
 async def life_span(app:FastAPI):
