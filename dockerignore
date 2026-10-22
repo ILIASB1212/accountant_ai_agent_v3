@@ -1,0 +1,27 @@
+.git
+.github
+.claude
+.venv
+venv
+env
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.ipynb_checkpoints
+*.ipynb
+laboratoire
+logs
+*.log
+
+# secrets
+.env
+.env.*
+!.env.example
+
+# docker files themselves
+Dockerfile
+docker-compose.yml
+.dockerignore
+*.md

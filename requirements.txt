@@ -47,12 +47,12 @@ pymupdf==1.27.2.2
 psutil==7.2.2
 accelerate
 glmocr
-~~~~~~~~#########################################
+#########################################
 pytest
 ragas
 python-dotenv
 mem0ai
-#################"
+
 cffi==1.17
 cryptography==46.0.0
 rich==13.9.4
@@ -66,7 +66,14 @@ pillow
 pypdfium2
 
 
+#database
 
+asyncpg
+pydantic-settings
+sqlmodel
+alembic
+supabase
+pydantic[email]
 
 
 ## pip install torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0 --index-url https://download.pytorch.org/whl/cu130
