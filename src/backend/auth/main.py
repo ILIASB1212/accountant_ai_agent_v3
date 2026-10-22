@@ -1,9 +1,38 @@
 import os
 from supabase import create_client
 from dotenv import load_dotenv
-from fastapi import FastAPI,HTTPException
-from pydantic import BaseModel,EmailStr,Field
+from fastapi import APIRouter, FastAPI,HTTPException
+from fastapi import Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from src.backend.auth.models import RegistrationModel, CompanyModel, PasswordResetModel
 
+
+
+security = HTTPBearer()
+
+def require_authenticated_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials
+
+    try:
+        response = supabase.auth.get_user(token)
+
+        if not response.user:
+            raise HTTPException(
+                status_code=401,
+                detail="You must register or log in first"
+            )
+
+        return response.user.id
+
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or expired access token. Please log in."
+        )
+
+auth_router=APIRouter()
 
 load_dotenv()
 
@@ -13,20 +42,7 @@ supabase = create_client(url, key)
 
 
 
-
-class RegistrationModel(BaseModel):
-    email: EmailStr 
-    password: str = Field(min_length=8, max_length=50)
-
-class CompanyModel(BaseModel):
-    company_name : str =Field(min_length=2, max_length=30)
-
-
-app=FastAPI()
-
-
-
-@app.post("/signup")
+@auth_router.post("/signup")
 def Create_user(request: RegistrationModel):
     email = request.email
     password = request.password
@@ -42,52 +58,74 @@ def Create_user(request: RegistrationModel):
 
 
         return {"message": f"User created successfully .check {email} for verification"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
 
-@app.post("/login")
+
+@auth_router.post("/login")
 def login_user(request: RegistrationModel):
-    email = request.email
-    password = request.password
     try:
-        user_record = supabase.table("User").select("*").eq("email", request.email).execute()
-        if not user_record.data:
-            #Supabase auth
-            user = supabase.auth.sign_in_with_password({
-                "email": request.email, 
-                "password": request.password
-            })
+        response = supabase.auth.sign_in_with_password({
+            "email": request.email,
+            "password": request.password
+        })
+
+        if not response.session:
+            raise HTTPException(
+                status_code=401,
+                detail="Login failed. Please verify your email if required."
+            )
+
+        return {
+            "message": "Login successful",
+            "access_token": response.session.access_token,
+            "token_type": "bearer"
+        }
+
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials, unverified email, or login failed."
+        )
 
 
-        return {"message": f"User logged in successfully .check {email} for verification"}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
 
 
-
-@app.post("/company_registration")
-def add_company(request: CompanyModel):
-    company = request.company_name
+@auth_router.post("/company_registration")
+def add_company(
+    request: CompanyModel,
+    user_id: str = Depends(require_authenticated_user)
+):
     try:
-    # Create a company
-        insert_1 = supabase.table("Company").insert({'company': company}).execute()
-        return {"message": f"Company registered successfully"}
+        result = supabase.table("Company").insert({
+            "name": request.company_name,
+            "user_id": user_id
+        }).execute()
+
+        return {
+            "message": "Company registered successfully",
+            "company": result.data[0]
+        }
+
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400,detail=str(e))
 
-class PasswordResetModel(BaseModel):
-    email: EmailStr
-    new_password: str = Field(min_length=8, max_length=50)
 
-@app.patch("/reset_password")
+@auth_router.patch("/reset_password")
 def update_password_by_email(request: PasswordResetModel):
     email = request.email
     new_password = request.new_password
     try:
         insert_1 = supabase.table("User").eq({'email': email}).update({'password': new_password}).execute()
         return {"message": f"Password reset successfully"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

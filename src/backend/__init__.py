@@ -1,12 +1,11 @@
 from fastapi import FastAPI
 from src.backend.agent.endpoint import agent_router
+from src.backend.auth.main import auth_router
 from contextlib import asynccontextmanager
-from src.backend.db.main import init_db, async_engine
 
 @asynccontextmanager
 async def life_span(app:FastAPI):
     print("Starting up...")
-    await init_db()
     yield 
     print("Shutting down...")
 
@@ -21,4 +20,6 @@ app = FastAPI(
 )
 
 app.include_router(agent_router, prefix=f"/api/{version}/agents", tags=['agent'])
+app.include_router(auth_router, prefix=f"/api/{version}/registration", tags=['registration'])
+
 

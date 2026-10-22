@@ -7,7 +7,7 @@ from src.backend.agent.schemas import ChatModel
 agent_router=APIRouter()
 
 @agent_router.get("/health")
-def ask_agent():
+def check_health():
     return {"status": "ok"}
 
 

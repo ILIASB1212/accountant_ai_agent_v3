@@ -1,47 +1,11 @@
-
-import uuid
-from datetime import datetime, timezone
-
-from sqlalchemy import Column, DateTime, String, Text, UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID
-from sqlmodel import SQLModel, Field
+from pydantic import BaseModel,EmailStr,Field
 
 
-def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
-
-
-class User(SQLModel, table=True):
-    __tablename__ = "users"
-
-    uid: uuid.UUID = Field(
-        default_factory=uuid.uuid4,
-        primary_key=True,
-    )
-    email: str = Field(
-        sa_column=Column(String, nullable=False, unique=True, index=True)
-    )
-    password_hash: str = Field(
-        sa_column=Column(String, nullable=False)
-    )
-    created_at: datetime = Field(
-        default_factory=utc_now,
-        sa_type=DateTime(timezone=True),
-    )
-
-
-class Company(SQLModel, table=True):
-    __tablename__ = "companies"
-
-    uid: uuid.UUID = Field(
-        default_factory=uuid.uuid4,
-        primary_key=True,
-    )
-    name: str = Field(nullable=False, index=True)
-    created_at: datetime = Field(
-        default_factory=utc_now,
-        sa_type=DateTime(timezone=True),
-    )
-
-
-
+class RegistrationModel(BaseModel):
+    email: EmailStr 
+    password: str = Field(min_length=8, max_length=50)
+class CompanyModel(BaseModel):
+    company_name : str =Field(min_length=2, max_length=30)
+class PasswordResetModel(BaseModel):
+    email: EmailStr
+    new_password: str = Field(min_length=8, max_length=50)
