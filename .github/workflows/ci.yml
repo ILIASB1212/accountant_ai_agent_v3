@@ -30,8 +30,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           
         run: |
-          python -c "from openai import OpenAI; r=OpenAI().embeddings.create(model='text-embedding-3-large', input=['test']); print('Embedding API works:', len(r.data[0].embedding) > 0)"            
-          # pytest src/test/unit_test.py -v --cov=src --cov-report=xml --cov-report=term-missing 
+          pytest src/test/unit_test.py -v --cov=src --cov-report=xml --cov-report=term-missing 
 
       - name: Upload coverages
         uses: codecov/codecov-action@v4
