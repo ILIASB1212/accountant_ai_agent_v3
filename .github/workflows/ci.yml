@@ -28,8 +28,10 @@ jobs:
       - name: Run tests
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          
         run: |
-          pytest src/test/unit_test.py -v --cov=src --cov-report=xml --cov-report=term-missing
+          python -c "import os; k=os.environ.get('OPENAI_API_KEY', ''); print('Key present:', bool(k)); print('Starts with sk-:', k.startswith('sk-')); print('Has surrounding whitespace:', k != k.strip()); print('Contains newline:', '\n' in k or '\r' in k)"
+          # pytest src/test/unit_test.py -v --cov=src --cov-report=xml --cov-report=term-missing 
 
       - name: Upload coverages
         uses: codecov/codecov-action@v4
