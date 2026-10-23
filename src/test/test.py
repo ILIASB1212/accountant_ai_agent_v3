@@ -33,8 +33,9 @@ def test_agent_returns_answer():
     final_message = messages[-1]
 
     assert final_message.content is not None
+    pass
     assert len(final_message.content) > 0
-
+    pass
 
 # ---------------------------------------------------------
 # TEST 2 — Accounting question
@@ -50,6 +51,7 @@ def test_accounting_question():
 
     assert len(response) > 0
     assert "2000" in response or "comptable" in response
+    pass
 
 
 # ---------------------------------------------------------
@@ -64,13 +66,14 @@ def test_tax_question():
     response = messages[-1].content.lower()
 
     assert len(response) > 0
+    pass
 
-    # We don't force an exact answer here.
-    # We only verify that the agent produced a tax-related response.
+    
     assert any(
         word in response
         for word in ["tva", "taxe", "taux", "%"]
     )
+    pass
 
 
 # ---------------------------------------------------------
@@ -89,6 +92,7 @@ def test_agent_uses_tool():
     ]
 
     assert len(tool_messages) > 0
+    pass
 
 
 # ---------------------------------------------------------
@@ -99,3 +103,4 @@ def test_empty_question():
     messages = run_agent("")
 
     assert len(messages) > 0
+    pass
