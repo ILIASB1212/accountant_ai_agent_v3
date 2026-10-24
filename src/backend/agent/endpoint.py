@@ -1,4 +1,5 @@
-from fastapi import APIRouter,HTTPException
+from fastapi import APIRouter,HTTPException,Depends
+from src.backend.auth.main import require_authenticated_user
 from src.agentic_workflow.agent import graph
 from datetime import datetime
 from fastapi.responses import PlainTextResponse
@@ -13,7 +14,8 @@ def check_health():
 
 
 @agent_router.post("/invoke")
-def ask_agent(request:ChatModel):
+def ask_agent(request:ChatModel,
+              user_id: str = Depends(require_authenticated_user)):
     try:
         config = {"configurable": {"thread_id": request.thread_id}}
         start=datetime.now()

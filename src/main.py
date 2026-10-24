@@ -7,7 +7,7 @@ from datetime import datetime
 import streamlit as st
 from langchain_core.messages import HumanMessage, AIMessageChunk
 
-from src.tools.glm_ocr import ocr_document
+from src.tools.groq_ocr import ocr_document
 from src.memory.memory_class import Memory
 
 
