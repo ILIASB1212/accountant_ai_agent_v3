@@ -68,6 +68,13 @@ def chat_node(state: AgentState, config: RunnableConfig) -> dict:
             f"Known user context (from long-term memory):\n{memory_context}"
         )
  
+    client_name = config.get("configurable", {}).get("client_name", "")
+    if client_name:
+        system_content += (
+            f"\n\nYou are working on the file of the client firm: {client_name}. "
+            "Keep the answer specific to this client."
+        )
+
     system_message = SystemMessage(content=system_content)
     all_messages = [system_message] + state["messages"]
     response = llm_with_tools.invoke(all_messages)
@@ -105,6 +112,11 @@ builder.add_conditional_edges(
 )
 builder.add_edge("tool_node", "chat")
 
-checkpointer = MemorySaver()
-graph = builder.compile(checkpointer=checkpointer)
+def build_graph(checkpointer):
+    """The API injects a Postgres checkpointer at startup (see src/backend/__init__.py)."""
+    return builder.compile(checkpointer=checkpointer)
+
+
+# In-memory fallback for the Streamlit app and the labs; conversations are lost on restart.
+graph = build_graph(MemorySaver())
 
