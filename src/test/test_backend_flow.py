@@ -9,10 +9,14 @@ import itertools
 import sys
 import types
 import uuid
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 from postgrest.exceptions import APIError
+
+# make `import src...` work whatever directory pytest is started from (local or CI)
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 ALICE, BOB, MALLORY = (str(uuid.UUID(int=i)) for i in (1, 2, 3))
 TOKENS = {"tok-alice": ALICE, "tok-bob": BOB, "tok-mallory": MALLORY}
@@ -164,7 +168,10 @@ def api(monkeypatch):
     monkeypatch.setattr(deps, "create_client", lambda *a, **k: FakeClient(db))
     backend.app.state.graph = graph
     FakeMem0.searches.clear(); FakeMem0.adds.clear()
-    return TestClient(backend.app), db, graph
+    yield TestClient(backend.app), db, graph
+    # don't leave modules bound to the fakes behind for other test files
+    for m in [m for m in sys.modules if m.startswith(("src.backend", "src.memory"))]:
+        del sys.modules[m]
 
 
 def h(who): return {"Authorization": f"Bearer tok-{who}"}
