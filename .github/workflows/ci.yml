@@ -1,10 +1,10 @@
 name: CI
 
 on:
-  push:
-    branches: [main, master]
   pull_request:
     branches: [main, master]
+  # called by deploy.yml, so every push to main/master is tested exactly once before deploying
+  workflow_call:
 
 jobs:
   test:
@@ -32,7 +32,7 @@ jobs:
           LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
 
         run: |
-          pytest src/test -v --cov=src --cov-report=xml --cov-report=term-missing 
+          pytest src/test -v --cov=src --cov-report=xml --cov-report=term-missing
 
       - name: Upload coverages
         uses: codecov/codecov-action@v4

@@ -1,3 +1,4 @@
+# keep secrets and junk out of the image
 .git
 .github
 .claude
@@ -11,11 +12,13 @@ __pycache__
 .mypy_cache
 .ipynb_checkpoints
 *.ipynb
+coverage.xml
+.coverage
 laboratoire
 logs
 *.log
 
-# secrets
+# secrets: never bake these into an image
 .env
 .env.*
 !.env.example
