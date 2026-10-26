@@ -1,3 +1,19 @@
+# `POST /api/v3/registration/signup`: create the owner account. If Supabase asks for email confirmation, click the link in your inbox. For testing you can switch it off under Authentication, then Sign In / Providers, then Email.
+#
+# 1. `POST /api/v3/registration/login`: copy the `access_token` from the response.
+# 2. Click the green Authorize button at the top right, paste the token, and confirm.
+# 3. `POST /api/v3/registration/company`: send `{"company_name": "Fiduciaire Luisiano"}`.
+# 4. `GET /api/v3/registration/me`: it shows your `join_code`.
+# 5. Sign up and log in with a second email as the worker, and authorize with that token instead. Call `POST /company/join` with the join code.
+# 6. Authorize again as the owner, call `GET /company/members`, then `POST /company/members/{user_id}/approve`.
+# 7. As the worker: `POST /agents/clients` with a client firm name, 
+# then `POST /agents/sessions` with its `client_id`, then `POST /agents/invoke` 
+# with `{"session_id": "...", "message": "Quel est le taux de l'IS ?"}`.
+
+
+
+
+
 import logging
 from contextlib import asynccontextmanager
 
@@ -48,7 +64,7 @@ async def life_span(app: FastAPI):
     print("Shutting down...")
 
 
-version = "v3"
+version = "v4"
 
 app = FastAPI(
     title="accounattant-agent",
