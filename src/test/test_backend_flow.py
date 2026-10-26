@@ -164,6 +164,17 @@ def api(monkeypatch):
     import src.backend as backend
     import src.backend.dependencies as deps
 
+    global REG, AG
+    paths = sorted(backend.app.openapi()["paths"])  # works across FastAPI versions
+
+    def prefix(suffix):
+        found = [p for p in paths if p.endswith(suffix)]
+        if not found:
+            pytest.fail(f"no route ending in {suffix!r}; the app exposes: {paths}")
+        return found[0][: -len(suffix)]
+
+    REG, AG = prefix("/company"), prefix("/invoke")
+
     db, graph = FakeDB(), FakeGraph()
     monkeypatch.setattr(deps, "create_client", lambda *a, **k: FakeClient(db))
     backend.app.state.graph = graph
@@ -175,7 +186,7 @@ def api(monkeypatch):
 
 
 def h(who): return {"Authorization": f"Bearer tok-{who}"}
-REG, AG = "/api/v3/registration", "/api/v3/agents"
+REG = AG = ""  # filled in by the `api` fixture from the real app, so a version bump can't break the test
 
 
 def test_full_flow(api):
