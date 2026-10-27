@@ -1,5 +1,3 @@
-
-
 from src.data_ingestion.documents_loader import DocumentLoader
 from src.data_ingestion.embedding import  Embeddings
 from src.data_ingestion.text_spliter import TextSpliter
@@ -8,6 +6,7 @@ from pathlib import Path
 from src.loging.logger import log
 from src.exceptions.custom_exceptions import CustomException
 import sys
+import os
 
 logging=log
 
@@ -44,6 +43,11 @@ class RagPipeLine:
             
 
         else:
+            if os.getenv("RAG_NO_REBUILD") == "1":
+                # production guard: re-embedding every PDF costs OpenAI credits and takes minutes
+                raise CustomException(
+                    f"No vectorstore found in {self.persist_dir} (chroma.sqlite3 missing). "
+                    "Refusing to rebuild it in production.", sys)
             try:
                 log.info(f"initialised rag pipeline for {self.data_dir}")
                 document_loader=DocumentLoader(directory=self.data_dir)
@@ -70,10 +74,3 @@ class RagPipeLine:
             except Exception as e:
                 log.error(f"error in rag pipeline {e}")
                 raise CustomException(f"error in rag pipeline {e}",sys)
-
-
-                
-                
-
-
-

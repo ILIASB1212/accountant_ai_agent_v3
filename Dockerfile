@@ -16,10 +16,14 @@ COPY requirements.txt .
 RUN uv pip install --system -r requirements.txt
 
 COPY . .
-#
+
 # Download the guardrail models while building, so they are not fetched on every cold start.
 # If this step fails the build still succeeds; the models are then downloaded at first start.
 RUN python -c "import src.protection_rail.guard" || echo "guard warm-up skipped"
+
+# Never re-embed the PDFs in production (it costs OpenAI credits and takes minutes):
+# if an index is missing, fail fast with a clear error instead. See the patch to src/PipeLine/pipeline.py.
+ENV RAG_NO_REBUILD=1
 
 # Cloud Run sends traffic to $PORT (8080). One process per container: the API.
 ENV PORT=8080
