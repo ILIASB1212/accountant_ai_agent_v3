@@ -16,7 +16,7 @@ COPY requirements.txt .
 RUN uv pip install --system -r requirements.txt
 
 COPY . .
-
+#
 # Download the guardrail models while building, so they are not fetched on every cold start.
 # If this step fails the build still succeeds; the models are then downloaded at first start.
 RUN python -c "import src.protection_rail.guard" || echo "guard warm-up skipped"
